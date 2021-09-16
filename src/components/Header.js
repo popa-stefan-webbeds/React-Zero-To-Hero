@@ -1,7 +1,9 @@
+import { useContext } from "react/cjs/react.development"
+import { HeaderContext } from "../App"
 import Button from "./Button"
 
-const Header = ({title, remainingTodos, doneTodos, onShowAdd, showAddTask}) => {
-
+const Header = ({title}) => {
+    const {remainingTodos, doneTodos, showAddTask, onShowAdd} = useContext(HeaderContext)
     return (
         <header className='header'>
             <h1>{title}</h1>

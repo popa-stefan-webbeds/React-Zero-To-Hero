@@ -1,13 +1,16 @@
 import Header from './components/Header'
 import Tasks from './components/Tasks'
 import AddTask from './components/AddTask'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, createContext } from 'react'
 
 const SERVER_ADDRESS = 'https://localhost:5001'
 
-function App() {
-  const [showAddTask, setShowAddTask] = useState(false);
+export const TasksContext = createContext();
+export const HeaderContext = createContext();
 
+function App() {
+
+  const [showAddTask, setShowAddTask] = useState(false);
   const [tasks, setTasks] = useState([])
 
   useEffect(() => {
@@ -78,11 +81,15 @@ function App() {
   const doneTodos = tasks.length - remainingTodos
   return (
     <div className="container">
-      <Header remainingTodos={remainingTodos} doneTodos={doneTodos} onShowAdd={onShowAdd} showAddTask={showAddTask} />
-      {showAddTask && <AddTask onAdd={addTask} />}
-      {
-        tasks.length > 0 ? <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleChecked} /> : 'You are free :)'
-      }
+      <HeaderContext.Provider value={{ remainingTodos, doneTodos, onShowAdd, showAddTask, addTask }}>
+        <Header />
+        {showAddTask && <AddTask/>}
+      </HeaderContext.Provider>
+      <TasksContext.Provider value={{ tasks, deleteTask, toggleChecked }}>
+        {
+          tasks.length > 0 ? <Tasks /> : 'You are free :)'
+        }
+      </TasksContext.Provider>
     </div>
   );
 }

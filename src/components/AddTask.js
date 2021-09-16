@@ -1,5 +1,8 @@
 import { useState } from "react"
-const AddTask = ({onAdd}) => {
+import { useContext } from "react/cjs/react.development";
+import { HeaderContext } from "../App";
+const AddTask = () => {
+    const {addTask} = useContext(HeaderContext)
     const[text, setText] = useState('');
     const[done, setDone] = useState(false);
     const onSubmit = (e) =>{
@@ -9,7 +12,7 @@ const AddTask = ({onAdd}) => {
             return
         }
         const checked = done;
-        onAdd({text, checked});
+        addTask({text, checked});
         setText('');
         setDone(false);
     }
