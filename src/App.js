@@ -2,6 +2,11 @@ import Header from './components/Header'
 import Tasks from './components/Tasks'
 import AddTask from './components/AddTask'
 import { useState, useEffect, createContext } from 'react'
+import ClipLoader from 'react-spinners/ClipLoader'
+import { useStyles } from './Styles'
+import Box from '@material-ui/core/Box'
+import { theme } from './Styles'
+import { ThemeProvider } from '@material-ui/styles'
 
 const SERVER_ADDRESS = 'https://localhost:5001'
 
@@ -12,13 +17,20 @@ function App() {
 
   const [showAddTask, setShowAddTask] = useState(false);
   const [tasks, setTasks] = useState([])
+  const [loading, setLoading] = useState(true);
+
+  const classes = useStyles()
+  const remainingTodos = tasks.filter((task) => !task.checked).length;
+  const doneTodos = tasks.length - remainingTodos
 
   useEffect(() => {
     const getTasks = async () => {
       const tasksFromServer = await fetchTasks(SERVER_ADDRESS + '/tasks')
       setTasks(tasksFromServer)
+      setTimeout(()=>{
+        setLoading(false);
+      },1000)
     }
-
     getTasks()
   }, [])
 
@@ -61,7 +73,6 @@ function App() {
     const updatedTask = await fetchTasks(`${SERVER_ADDRESS}/tasks/${id}`)
     console.log('updatedTask', updatedTask);
     setTasks(tasks.map((task) => task.id === id ?
-      //{ ...task, checked: !task.checked }
       updatedTask : task))
   }
 
@@ -75,22 +86,21 @@ function App() {
     })
   }
 
-  //const remainingTodos = () => { return tasks.filter((task)=>!task.checked).length;}
-  const remainingTodos = tasks.filter((task) => !task.checked).length;
-  //const doneTodos = () => { return tasks.length - remainingTodos() }
-  const doneTodos = tasks.length - remainingTodos
   return (
-    <div className="container">
-      <HeaderContext.Provider value={{ remainingTodos, doneTodos, onShowAdd, showAddTask, addTask }}>
-        <Header />
-        {showAddTask && <AddTask/>}
-      </HeaderContext.Provider>
-      <TasksContext.Provider value={{ tasks, deleteTask, toggleChecked }}>
-        {
-          tasks.length > 0 ? <Tasks /> : 'You are free :)'
-        }
-      </TasksContext.Provider>
-    </div>
+    <ThemeProvider theme={theme}>
+      {loading ? <Box className={classes.loadingIcon} ><ClipLoader size={125} color={"aqua"}/></Box> :
+      <div className={classes.container}>
+        <HeaderContext.Provider value={{ remainingTodos, doneTodos, onShowAdd, showAddTask, addTask }}>
+          <Header />
+          {showAddTask && <AddTask/>}
+        </HeaderContext.Provider>
+        <TasksContext.Provider value={{ tasks, deleteTask, toggleChecked }}>
+          {
+            tasks.length > 0 ? <Tasks /> : <h3>You are free :)</h3>
+          }
+        </TasksContext.Provider>
+      </div>}
+    </ThemeProvider>
   );
 }
 

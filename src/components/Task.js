@@ -1,29 +1,25 @@
-import { FaTimes } from 'react-icons/fa'
-import { FaCheckCircle } from 'react-icons/fa'
+import { CheckBox, Delete} from '@material-ui/icons'
 import { useContext } from 'react/cjs/react.development'
 import { TasksContext } from '../App'
-
+import Box from '@material-ui/core/Box'
 const Task = ({ task }) => {
     const {deleteTask, toggleChecked} = useContext(TasksContext)
     return (
         <div className={`task ${task.checked ? 'done' : ''}`}>
             <h3>
                 {task.text}
-                <div>
-                    <FaCheckCircle style={
-                        {
+                <Box>
+                    <CheckBox 
+                           style={{
                             color: 'green',
-                            cursor: 'pointer',
-                            margin: '0px 10px'
-                        }
-                    } onClick={() => toggleChecked(task.id)} />
-                    <FaTimes style={{
+                        }}
+                     onClick={() => toggleChecked(task.id)} />
+                    <Delete style={{
                         color: 'red',
-                        cursor: 'pointer',
                     }}
                         onClick={() => deleteTask(task.id)}
                     />
-                </div>
+                </Box>
             </h3>
 
         </div>
