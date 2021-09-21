@@ -1,42 +1,50 @@
-import { createContext } from "react";
+import { createContext, useReducer } from "react";
 import Box from '@material-ui/core/Box'
-import { useState, useEffect } from "react/cjs/react.development";
+import { useEffect } from "react/cjs/react.development";
 import { useStyles } from "../Styles";
 import ClipLoader from 'react-spinners/ClipLoader'
 import { fetchTasksApi, fetchTaskApi, addTaskApi, deleteTaskApi, updateTaskApi } from "../Services";
+import reducer from "../Reducer";
+import TYPES  from "../types";
+
 export const GlobalContext = createContext()
 
+const initialState = {
+    tasks: [],
+    loading: true,
+    showAddTask: false,
+}
 
 const MyContext = ({ children }) => {
 
+    const [state, dispatch] = useReducer(reducer, initialState)
+
     const classes = useStyles()
-    const [tasks, setTasks] = useState([])
-    const [loading, setLoading] = useState(true);
-    const [showAddTask, setShowAddTask] = useState(false);
 
     useEffect(() => {
         const getTasks = async () => {
             const tasksFromServer = await fetchTasksApi()
-            setTasks(tasksFromServer)
-            setLoading(false);
+            dispatch({type: TYPES.FETCH_SERVER_TASKS, payload: tasksFromServer})
         }
         getTasks()
     }, [])
 
-    const onShowAdd = () => setShowAddTask(!showAddTask)
-    const remainingTodos = tasks.filter((task) => !task.checked).length;
-    const doneTodos = tasks.length - remainingTodos;
+    const onShowAdd = () =>{
+        dispatch({type: TYPES.SHOW_ADD_TASK})
+    }
+    const remainingTodos = state.tasks.filter((task) => !task.checked).length;
+    const doneTodos = state.tasks.length - remainingTodos;
 
 
     const addTask = async (newTask) => {
         const data = await addTaskApi(newTask);
-        setTasks([...tasks, data]);
+        dispatch({type: TYPES.ADD_TASK, payload: data})
     }
 
     const deleteTask = async (id) => {
         const result = await deleteTaskApi(id);
         if (result) {
-            setTasks(tasks.filter((task) => task.id !== id))
+            dispatch({type: TYPES.DELETE_TASK, payload: id})
         }
     }
 
@@ -45,14 +53,13 @@ const MyContext = ({ children }) => {
         const result = await updateTaskApi(id, { 'text': myTask.text, 'checked': !myTask.checked });
         if (result) {
             const updatedTask = await fetchTaskApi(id);
-            setTasks(tasks.map((task) => task.id === id ?
-                updatedTask : task))
+            dispatch({type: TYPES.UPDATE_TASK, payload: {id, updatedTask}})
         }
     }
 
     return (
-        loading ? <Box className={classes.loadingIcon}><ClipLoader size={125} color={"aqua"} /></Box> :
-            <GlobalContext.Provider value={{ tasks, setTasks, remainingTodos, doneTodos, onShowAdd, showAddTask, addTask, deleteTask, updateTask }}>
+        state.loading ? <Box className={classes.loadingIcon}><ClipLoader size={125} color={"aqua"} /></Box> :
+            <GlobalContext.Provider value={{...state, onShowAdd, addTask, deleteTask, updateTask, remainingTodos, doneTodos}}>
                 <div className={classes.container}>
                     {children}
                 </div>

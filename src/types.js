@@ -1,0 +1,11 @@
+const TYPES = {
+    ADD_TASK: 'ADD_TASK',
+    SHOW_ADD_TASK: 'SHOW_ADD_TASK',
+    FETCH_SERVER_TASKS: 'FETCH_SERVER_TASKS',
+    DELETE_TASK: 'DELETE_TASK',
+    UPDATE_TASK: 'UPDATE_TASK',
+    
+
+}
+
+export default TYPES
