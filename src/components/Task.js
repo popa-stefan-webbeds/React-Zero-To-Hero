@@ -1,19 +1,19 @@
-import { CheckBox, Delete} from '@material-ui/icons'
+import { CheckBox, Delete } from '@material-ui/icons'
 import { useContext } from 'react/cjs/react.development'
-import { TasksContext } from '../App'
 import Box from '@material-ui/core/Box'
+import { GlobalContext } from '../context/MyContext'
 const Task = ({ task }) => {
-    const {deleteTask, toggleChecked} = useContext(TasksContext)
+    const { deleteTask, updateTask } = useContext(GlobalContext)
     return (
         <div className={`task ${task.checked ? 'done' : ''}`}>
             <h3>
                 {task.text}
                 <Box>
-                    <CheckBox 
-                           style={{
+                    <CheckBox
+                        style={{
                             color: 'green',
                         }}
-                     onClick={() => toggleChecked(task.id)} />
+                        onClick={() => updateTask(task.id)} />
                     <Delete style={{
                         color: 'red',
                     }}

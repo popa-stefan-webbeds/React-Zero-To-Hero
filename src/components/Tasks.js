@@ -1,17 +1,15 @@
 import Task from './Task'
 import { useContext } from 'react'
-import { TasksContext } from '../App'
+import { GlobalContext } from '../context/MyContext'
 
 const Tasks = () => {
-    const {tasks} = useContext(TasksContext)
+    const { tasks } = useContext(GlobalContext)
     return (
-        <>
-            {
-                tasks.map((myTask)=>
-                <Task key={myTask.id} task={myTask}/>
-                )
-            }
-        </>
+        tasks.length > 0 ?
+            tasks.map((myTask) =>
+                <Task key={myTask.id} task={myTask} />
+            ) :
+            <h3>You are free ;)</h3>
     )
 }
 export default Tasks
