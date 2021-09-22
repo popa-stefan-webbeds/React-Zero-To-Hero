@@ -13,6 +13,8 @@ const initialState = {
     tasks: [],
     loading: true,
     showAddTask: false,
+    remainingTodos: 0,
+    doneTodos: 0,
 }
 
 const MyContext = ({ children }) => {
@@ -29,12 +31,13 @@ const MyContext = ({ children }) => {
         getTasks()
     }, [])
 
+    useEffect(() =>{
+        dispatch({type: TYPES.UPDATE_COUNTERS})
+    }, [state.tasks])
+
     const onShowAdd = () =>{
         dispatch({type: TYPES.SHOW_ADD_TASK})
     }
-    const remainingTodos = state.tasks.filter((task) => !task.checked).length;
-    const doneTodos = state.tasks.length - remainingTodos;
-
 
     const addTask = async (newTask) => {
         const data = await addTaskApi(newTask);
@@ -59,7 +62,7 @@ const MyContext = ({ children }) => {
 
     return (
         state.loading ? <Box className={classes.loadingIcon}><ClipLoader size={125} color={"aqua"} /></Box> :
-            <GlobalContext.Provider value={{...state, onShowAdd, addTask, deleteTask, updateTask, remainingTodos, doneTodos}}>
+            <GlobalContext.Provider value={{...state, onShowAdd, addTask, deleteTask, updateTask}}>
                 <div className={classes.container}>
                     {children}
                 </div>
